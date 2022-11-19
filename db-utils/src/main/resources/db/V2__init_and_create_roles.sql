@@ -14,7 +14,7 @@ CREATE TABLE roles
 CREATE TABLE users_roles
 (
     user_id integer NOT NULL REFERENCES users (id) ON DELETE CASCADE ON UPDATE CASCADE,
-    role_id integer NOT NULL REFERENCES roles (id) ON DELETE CASCADE ON UPDATE CASCADE,
+    role_id integer NOT NULL REFERENCES roles (id) ON UPDATE CASCADE,
     PRIMARY KEY (user_id, role_id)
 );
 
