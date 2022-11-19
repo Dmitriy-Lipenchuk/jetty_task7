@@ -1,0 +1,17 @@
+jdbcdriver=org.postgresql.Driver
+url=jdbc:postgresql://localhost:5432/jetty
+username=postgres
+password=123456789
+
+usertable=users
+usertablekey=id
+usertableuserfield=name
+usertablepasswordfield=password
+
+roletable=roles
+roletablekey=id
+roletablerolefield=role
+
+userroletable=users_roles
+userroletableuserkey=user_id
+userroletablerolekey=role_id
