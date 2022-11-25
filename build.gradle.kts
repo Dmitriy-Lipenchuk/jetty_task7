@@ -23,7 +23,12 @@ subprojects  {
         implementation("org.jooq:jooq-codegen:3.17.4")
         implementation("org.jooq:jooq-meta:3.17.4")
 
-        implementation("org.eclipse.jetty:jetty-server:11.0.12")
-        implementation("org.eclipse.jetty:jetty-servlet:11.0.12")
+        implementation("com.google.inject:guice:5.1.0")
+        implementation("com.google.inject.extensions:guice-servlet:5.1.0")
+
+        implementation("com.fasterxml.jackson.core:jackson-core:2.14.1")
+
+        implementation("org.eclipse.jetty:jetty-server:9.4.33.v20201020")
+        implementation("org.eclipse.jetty:jetty-servlet:9.4.33.v20201020")
     }
 }

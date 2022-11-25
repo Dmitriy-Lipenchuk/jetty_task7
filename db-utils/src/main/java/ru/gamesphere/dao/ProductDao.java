@@ -1,6 +1,7 @@
 package ru.gamesphere.dao;
 
 import generated.tables.records.CompaniesRecord;
+import generated.tables.records.ProductsRecord;
 import org.jetbrains.annotations.NotNull;
 import org.jooq.DSLContext;
 import org.jooq.Record5;
@@ -79,5 +80,57 @@ public class ProductDao implements Dao<Product, ProductDto> {
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public boolean deleteIfExistByProductName(String name) {
+        try (Connection connection = ConnectionManager.open()) {
+            DSLContext context = DSL.using(connection, SQLDialect.POSTGRES);
+
+            List<ProductsRecord> records = context.selectFrom(PRODUCTS)
+                    .where(PRODUCTS.NAME.eq(name))
+                    .fetch();
+
+            if (records.size() == 0) {
+                return false;
+            }
+
+            context.deleteFrom(PRODUCTS)
+                    .where(PRODUCTS.NAME.eq(name))
+                    .execute();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+        return true;
+    }
+
+    public List<Product> getProductsByCompanyName(String companyName) {
+        List<Product> products = new ArrayList<>();
+
+        try (Connection connection = ConnectionManager.open()) {
+            DSLContext context = DSL.using(connection, SQLDialect.POSTGRES);
+
+            List<Record5<Integer, String, Integer, String, Integer>> records = context.select(
+                            PRODUCTS.ID,
+                            PRODUCTS.NAME,
+                            COMPANIES.ID,
+                            COMPANIES.NAME,
+                            PRODUCTS.QUANTITY
+                    ).from(PRODUCTS)
+                    .innerJoin(COMPANIES).on(PRODUCTS.COMPANY_ID.eq(COMPANIES.ID))
+                    .where(COMPANIES.NAME.eq(companyName))
+                    .fetch();
+
+            for (Record5<Integer, String, Integer, String, Integer> record : records) {
+                products.add(new Product(record.get(PRODUCTS.ID),
+                        record.get(PRODUCTS.NAME),
+                        new Company(record.get(COMPANIES.ID), record.get(COMPANIES.NAME)),
+                        record.get(PRODUCTS.QUANTITY)));
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+        return products;
     }
 }
