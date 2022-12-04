@@ -25,5 +25,6 @@ subprojects  {
 
         implementation("org.eclipse.jetty:jetty-server:11.0.12")
         implementation("org.eclipse.jetty:jetty-servlet:11.0.12")
+        implementation("org.eclipse.jetty:jetty-servlets:11.0.12")
     }
 }

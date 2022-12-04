@@ -1,10 +1,10 @@
 package ru.gamesphere.dao;
 
 import generated.tables.records.CompaniesRecord;
+import generated.tables.records.ProductsRecord;
 import org.jetbrains.annotations.NotNull;
-import org.jooq.DSLContext;
-import org.jooq.Record5;
-import org.jooq.SQLDialect;
+import org.jetbrains.annotations.Nullable;
+import org.jooq.*;
 import org.jooq.impl.DSL;
 import ru.gamesphere.dto.ProductDto;
 import ru.gamesphere.entity.Company;
@@ -24,12 +24,12 @@ public class ProductDao implements Dao<Product, ProductDto> {
 
     @Override
     public @NotNull List<@NotNull Product> all() {
-        List<Product> products = new ArrayList<>();
+        List<Product> products;
 
         try (Connection connection = ConnectionManager.open()) {
             DSLContext context = DSL.using(connection, SQLDialect.POSTGRES);
 
-            List<Record5<Integer, String, Integer, String, Integer>> records = context.select(
+            products = context.select(
                             PRODUCTS.ID,
                             PRODUCTS.NAME,
                             COMPANIES.ID,
@@ -37,14 +37,10 @@ public class ProductDao implements Dao<Product, ProductDto> {
                             PRODUCTS.QUANTITY
                     ).from(PRODUCTS)
                     .innerJoin(COMPANIES).on(PRODUCTS.COMPANY_ID.eq(COMPANIES.ID))
-                    .fetch();
-
-            for (Record5<Integer, String, Integer, String, Integer> record : records) {
-                products.add(new Product(record.get(PRODUCTS.ID),
-                        record.get(PRODUCTS.NAME),
-                        new Company(record.get(COMPANIES.ID), record.get(COMPANIES.NAME)),
-                        record.get(PRODUCTS.QUANTITY)));
-            }
+                    .fetch(record -> new Product(record.get(PRODUCTS.ID),
+                            record.get(PRODUCTS.NAME),
+                            new Company(record.get(COMPANIES.ID), record.get(COMPANIES.NAME)),
+                            record.get(PRODUCTS.QUANTITY)));
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
