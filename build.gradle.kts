@@ -30,5 +30,6 @@ subprojects  {
 
         implementation("org.eclipse.jetty:jetty-server:9.4.33.v20201020")
         implementation("org.eclipse.jetty:jetty-servlet:9.4.33.v20201020")
+        implementation("org.eclipse.jetty:jetty-servlets:9.4.33.v20201020")
     }
 }

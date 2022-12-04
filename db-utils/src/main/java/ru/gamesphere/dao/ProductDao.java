@@ -4,7 +4,6 @@ import generated.tables.records.CompaniesRecord;
 import generated.tables.records.ProductsRecord;
 import org.jetbrains.annotations.NotNull;
 import org.jooq.DSLContext;
-import org.jooq.Record5;
 import org.jooq.SQLDialect;
 import org.jooq.impl.DSL;
 import ru.gamesphere.dto.ProductDto;
@@ -14,7 +13,6 @@ import ru.gamesphere.utils.ConnectionManager;
 
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 
 import static generated.Tables.COMPANIES;
@@ -25,12 +23,12 @@ public class ProductDao implements Dao<Product, ProductDto> {
 
     @Override
     public @NotNull List<@NotNull Product> all() {
-        List<Product> products = new ArrayList<>();
+        List<Product> products;
 
         try (Connection connection = ConnectionManager.open()) {
             DSLContext context = DSL.using(connection, SQLDialect.POSTGRES);
 
-            List<Record5<Integer, String, Integer, String, Integer>> records = context.select(
+            products = context.select(
                             PRODUCTS.ID,
                             PRODUCTS.NAME,
                             COMPANIES.ID,
@@ -38,14 +36,10 @@ public class ProductDao implements Dao<Product, ProductDto> {
                             PRODUCTS.QUANTITY
                     ).from(PRODUCTS)
                     .innerJoin(COMPANIES).on(PRODUCTS.COMPANY_ID.eq(COMPANIES.ID))
-                    .fetch();
-
-            for (Record5<Integer, String, Integer, String, Integer> record : records) {
-                products.add(new Product(record.get(PRODUCTS.ID),
-                        record.get(PRODUCTS.NAME),
-                        new Company(record.get(COMPANIES.ID), record.get(COMPANIES.NAME)),
-                        record.get(PRODUCTS.QUANTITY)));
-            }
+                    .fetch(record -> new Product(record.get(PRODUCTS.ID),
+                            record.get(PRODUCTS.NAME),
+                            new Company(record.get(COMPANIES.ID), record.get(COMPANIES.NAME)),
+                            record.get(PRODUCTS.QUANTITY)));
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -104,13 +98,13 @@ public class ProductDao implements Dao<Product, ProductDto> {
         return true;
     }
 
-    public List<Product> getProductsByCompanyName(String companyName) {
-        List<Product> products = new ArrayList<>();
+    public @NotNull List<@NotNull Product> getProductsByCompanyName(String companyName) {
+        List<Product> products;
 
         try (Connection connection = ConnectionManager.open()) {
             DSLContext context = DSL.using(connection, SQLDialect.POSTGRES);
 
-            List<Record5<Integer, String, Integer, String, Integer>> records = context.select(
+            products = context.select(
                             PRODUCTS.ID,
                             PRODUCTS.NAME,
                             COMPANIES.ID,
@@ -119,14 +113,10 @@ public class ProductDao implements Dao<Product, ProductDto> {
                     ).from(PRODUCTS)
                     .innerJoin(COMPANIES).on(PRODUCTS.COMPANY_ID.eq(COMPANIES.ID))
                     .where(COMPANIES.NAME.eq(companyName))
-                    .fetch();
-
-            for (Record5<Integer, String, Integer, String, Integer> record : records) {
-                products.add(new Product(record.get(PRODUCTS.ID),
-                        record.get(PRODUCTS.NAME),
-                        new Company(record.get(COMPANIES.ID), record.get(COMPANIES.NAME)),
-                        record.get(PRODUCTS.QUANTITY)));
-            }
+                    .fetch(record -> new Product(record.get(PRODUCTS.ID),
+                            record.get(PRODUCTS.NAME),
+                            new Company(record.get(COMPANIES.ID), record.get(COMPANIES.NAME)),
+                            record.get(PRODUCTS.QUANTITY)));
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
