@@ -11,13 +11,13 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-@Path("")
-public class DaoREST {
+@Path("/resources")
+public class ProductResourceREST {
     private final ProductDao productDao;
     private final ObjectMapper objectMapper;
 
     @Inject
-    public DaoREST(ProductDao productDao, ObjectMapper objectMapper) {
+    public ProductResourceREST(ProductDao productDao, ObjectMapper objectMapper) {
         this.productDao = productDao;
         this.objectMapper = objectMapper;
     }

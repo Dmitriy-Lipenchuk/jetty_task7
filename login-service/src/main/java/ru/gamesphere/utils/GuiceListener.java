@@ -5,7 +5,7 @@ import com.google.inject.AbstractModule;
 import com.google.inject.Module;
 import org.jboss.resteasy.plugins.guice.GuiceResteasyBootstrapServletContextListener;
 import ru.gamesphere.api.InfoREST;
-import ru.gamesphere.api.DaoREST;
+import ru.gamesphere.api.ProductResourceREST;
 
 import javax.servlet.ServletContext;
 import java.util.Collections;
@@ -21,7 +21,7 @@ public class GuiceListener extends GuiceResteasyBootstrapServletContextListener 
         @Override
         protected void configure() {
             bind(InfoREST.class);
-            bind(DaoREST.class);
+            bind(ProductResourceREST.class);
             bind(ObjectMapper.class).toInstance(new ObjectMapper());
         }
     }

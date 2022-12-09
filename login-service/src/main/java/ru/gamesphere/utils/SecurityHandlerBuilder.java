@@ -25,12 +25,12 @@ public final class SecurityHandlerBuilder {
         final List<ConstraintMapping> constraintMappings = new ArrayList<>();
         constraintMappings.addAll(constraintPostMapping(
                 buildConstraint(ROLE_MANAGER),
-                Stream.of("/save", "/delete").collect(Collectors.toList())
+                Stream.of("/resources/save", "/resources/delete").collect(Collectors.toList())
         ));
 
         constraintMappings.addAll(constraintGetMapping(
                 buildConstraint(ROLE_GUEST, ROLE_MANAGER),
-                Stream.of("/products", "/productListByCompanyName").collect(Collectors.toList())
+                Stream.of("/resources/products", "/resources/productListByCompanyName").collect(Collectors.toList())
         ));
 
         security.setConstraintMappings(constraintMappings);
